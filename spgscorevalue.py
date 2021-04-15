@@ -2,6 +2,7 @@ import snowflake.connector as sf
 import pandas as pd
 import matplotlib.pyplot as plt
 from config import config
+import numpy as np
 
 # Connection String
 conn = sf.connect(
@@ -92,14 +93,53 @@ df1234 = pd.merge(df123,df4,how='left',on='ASSESSMENTTYPEID')
 df12345 = pd.merge(df1234,df5,how='left',on='SCORETYPEID')
 #df12345 = df12345[['SCORETYPEID','SCORETYPENAME','SAMINDUSTRYNAME','SAMINDUSTRYID','SCOREVALUE']]
 #merging datasets 1,2,3,4, and 5
-df = pd.merge(df12345,df6,how='left',on=['ASPECTID','SAMINDUSTRYID'])
-#df = df[['SAMINDUSTRYID','ASPECTID','SAMINDUSTRYNAME','SAMINDUSTRYID','FROMDATE','TODATE']]
-#print(df.head())
-#only filtering out REA Real Estate
+# df = pd.merge(df12345,df6,how='left',on=['ASPECTID','SAMINDUSTRYID'])
+# df = df[['ASPECTID','ASPECTNAME']]
+# df = df.loc[(df['ASPECTID']==107) | (df['ASPECTID']==108) | (df['ASPECTID']==114) | (df['ASPECTID']==124)]
+# df = df.sort_values(by='ASPECTID').drop_duplicates()
+# print(df)
+# df = df[['SAMINDUSTRYID','ASPECTID','SAMINDUSTRYNAME','SAMINDUSTRYID','FROMDATE','TODATE']]
+# print(df.head())
+# only filtering out REA Real Estate
 dfRE = df[df["SAMINDUSTRYNAME"]=='REA Real Estate']
 dfRE = dfRE[['SCOREID','INSTITUTIONID','ASPECTID','SAMINDUSTRYNAME','SCOREVALUE']]
 dfRE = dfRE.sort_values(by='SCOREVALUE', ascending=False).head(3)
 print(dfRE)
+#Question 1 Total Overview of ESG SCORES by making Histogram of all companies ESG Scores
+dfesg = df.loc[(df['ASPECTID']==107)&(df["ASSESSMENTYEAR"]==2020)]
+dfesg.dropna(subset=['ASPECTNAME'])
+dfesg.drop_duplicates()
+x = dfesg['SCOREVALUE']
+plt.style.use('ggplot')
+fig, ax=plt.subplots(1,1)
+n,bins,patches=ax.hist(x, bins =[0,10,20,30,40,50,60,70,80,90,100], color='orange')
+mean_esg=dfesg['SCOREVALUE'].mean()
+#print(mean_esg)
+ax.axvline(mean_esg,color='black',label='Mean ESG SCORE')
+ax.legend(loc=0)
+patches[0].set_fc("red")
+patches[1].set_fc("yellow")
+patches[2].set_fc("green")
+patches[3].set_fc("blue")
+patches[4].set_fc("aqua")
+patches[5].set_fc("indigo")
+patches[6].set_fc("lavendar")
+patches[7].set_fc("salmon")
+patches[8].set_fc("grey")
+plt.xticks(bins)
+plt.xlabel('ESG Scores', fontsize=15)
+plt.ylabel('Frequency', fontsize=15)
+plt.title('Overall ESG Scores 2020', fontsize=15)
+# plot values on top of bars
+rects = ax.patches
+labels = ["label%d" % i for i in range(len(rects))]
+  
+for rect, label in zip(rects, labels):
+    height = rect.get_height()
+    ax.text(rect.get_x() + rect.get_width() / 2, height+0.01, int(height),
+            ha='center', va='bottom', fontsize=8)
+plt.show()
+
 #filtering out Assessment Year = 2020 and grouping by industry and making it descending order
 yr_2020 = df.loc[df["ASSESSMENTYEAR"]==2020]
 yr_2020 = yr_2020.sort_values(by='SCOREVALUE', ascending=False).groupby(by='SAMINDUSTRYID').head(3)
