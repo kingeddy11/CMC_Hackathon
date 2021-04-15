@@ -93,7 +93,7 @@ df1234 = pd.merge(df123,df4,how='left',on='ASSESSMENTTYPEID')
 df12345 = pd.merge(df1234,df5,how='left',on='SCORETYPEID')
 #df12345 = df12345[['SCORETYPEID','SCORETYPENAME','SAMINDUSTRYNAME','SAMINDUSTRYID','SCOREVALUE']]
 #merging datasets 1,2,3,4, and 5
-# df = pd.merge(df12345,df6,how='left',on=['ASPECTID','SAMINDUSTRYID'])
+df = pd.merge(df12345,df6,how='left',on=['ASPECTID','SAMINDUSTRYID'])
 # df = df[['ASPECTID','ASPECTNAME']]
 # df = df.loc[(df['ASPECTID']==107) | (df['ASPECTID']==108) | (df['ASPECTID']==114) | (df['ASPECTID']==124)]
 # df = df.sort_values(by='ASPECTID').drop_duplicates()
